@@ -10,6 +10,20 @@ let started = false
 
 // general flow: sound desk >> computer (web audio >> OBS >> resolume) >> arduino >> LED panel
 
+let macMode = function() {
+    navigator.mediaDevices.getUserMedia({audio: true})
+    .then(function(stream) {
+        initiateNode(stream)
+    })
+}
+
+let initiateNode = function (stream) {
+    let source = audioCtx.createMediaStreamSource(stream)
+    source.connect(analyser)
+    console.log(stream)
+    visualise() 
+}
+
 // create media stream from mic input
 canvas.onclick = function() {
     if (started) {
@@ -21,10 +35,7 @@ canvas.onclick = function() {
 if (navigator.mediaDevices) {
     navigator.mediaDevices.getDisplayMedia ({audio: true, video: true})
     .then(function(stream) {
-        let source = audioCtx.createMediaStreamSource(stream)
-        source.connect(analyser)
-        console.log(stream)
-        visualise()
+        initiateNode(stream)
     })
     .catch(function(err) {
         console.log('getUserMedia error' + err)
